@@ -15,9 +15,21 @@ async function check(city){
     let fareinheit = document.getElementById("fahreinheit")
     fareinheit.addEventListener("click",()=>{
         let temparature_fareinheit = (temperature_value*1.8)+32
-         document.querySelector('.temp_display').innerHTML=`${temparature_fareinheit}°F`
+         document.querySelector('.temp_display').innerHTML=`${temparature_fareinheit.toFixed(2)}°F`
     })
     document.querySelector('.card-text').innerHTML=data.weather[0].description;
+    let weatherImg = document.getElementById("weatherImg")
+    if(temperature_value<0){
+        weatherImg.scr='img/freezing.jpg'
+    }else if(temperature_value>0 && temperature_value<10){
+        weatherImg.src='img/Cold.jpg'
+    }else if(temperature_value>10 && temperature_value<20){
+        weatherImg.src='img/Cool.jpg'
+    }else if(temperature_value>20 && temperature_value<30){
+        weatherImg.src='img/Warm.jpg'
+    }else{
+        weatherImg.src='img/Hot.jpg'
+    }
 }
 searchButton.addEventListener("click",(e)=>{
     e.preventDefault()
