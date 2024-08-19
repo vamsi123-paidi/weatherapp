@@ -2,17 +2,24 @@ let apiKey = "e25ddb66337bc8c7f6c572ffe0527d30";
 let apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
 let searchInput = document.getElementById("search_input");
 let searchButton = document.getElementById("search_btn");
+let darkMode = document.getElementById("darkMode_btn");
+darkMode.addEventListener("click",()=>{
+    document.body.style.backgroundColor = "black"
+})
+let lightMode = document.getElementById("lightMode_btn");
+lightMode.addEventListener("click",()=>{
+    document.body.style.backgroundColor = "white"
+})
 
-// Function to fetch and display the five-day weather forecast
 let weatherData = async (lat, lon) => {
     let forecastApiUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
     let response = await fetch(forecastApiUrl);
     let data = await response.json();
+    console.log(data);
 
     let forecastContainer = document.getElementById("Future_data").querySelector(".row");
-    forecastContainer.innerHTML = ""; // Clear previous content
+    forecastContainer.innerHTML = "";
 
-    // Extracting 5 days' forecast by taking one entry from each day (every 8th entry corresponds to 24 hours)
     for (let i = 0; i < 5; i++) {
         let dayData = data.list[i * 8];
         let temp = Math.round(dayData.main.temp);
@@ -20,7 +27,6 @@ let weatherData = async (lat, lon) => {
         let iconCode = dayData.weather[0].icon;
         let dayName = new Date(dayData.dt * 1000).toLocaleDateString('en-US', { weekday: 'long' });
 
-        // Create the card for each day
         forecastContainer.innerHTML += `
             <div class="col-12 col-sm-6 col-md-4 col-lg-2 mb-4">
                 <div class="card future-weather-card mx-auto">
@@ -35,18 +41,16 @@ let weatherData = async (lat, lon) => {
     }
 };
 
-// Function to check current weather and then call weatherData for the forecast
 async function check(city) {
     let response = await fetch(apiUrl + city + `&appid=${apiKey}`);
     let data = await response.json();
-    console.log(data);
+    // console.log(data);
 
     document.querySelector('.card-title').innerHTML = data.name;
     let temperature_value = Math.round(data.main.temp);
     document.querySelector('.temp_display').innerHTML = `${temperature_value}`;
     document.querySelector('.card-text').innerHTML = data.weather[0].description;
 
-    // Update weather image based on temperature
     let weatherImg = document.getElementById("weatherImg");
     if (temperature_value < 0) {
         weatherImg.src = 'img/freezing.jpg';
@@ -60,7 +64,6 @@ async function check(city) {
         weatherImg.src = 'img/Hot.jpg';
     }
 
-    // Event listeners for temperature unit conversion
     let degree_celsius = document.getElementById("degree_celsius");
     degree_celsius.addEventListener("click", () => {
         document.querySelector('.temp_display').innerHTML = `${temperature_value}°C`;
@@ -72,13 +75,16 @@ async function check(city) {
         document.querySelector('.temp_display').innerHTML = `${temperature_fahrenheit.toFixed(2)}°F`;
     });
 
-    // Call weatherData to get the forecast using the city's coordinates
     await weatherData(data.coord.lat, data.coord.lon);
 }
 
-// Event listener for the search button
 searchButton.addEventListener("click", async (e) => {
-    e.preventDefault();
-    let city = searchInput.value;
-    await check(city);
+    try {
+        e.preventDefault();
+        let city = searchInput.value;
+        await check(city);
+    }
+    catch {
+        alert("Enter city name correctly")
+    }
 });
